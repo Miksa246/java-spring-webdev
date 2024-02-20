@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Measurement List</title>
+</head>
+<body>
+<h1>Sensor measurements data</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Unit</th>
+        <th>Value</th>
+        <th>Location</th>
+        <th>Time</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="measurement :${measurements}">
+        <td th:text="${measurement.id}"></td>
+        <td th:text="${measurement.unit}"></td>
+        <td th:text="${measurement.value}"></td>
+        <td th:text="${measurement.location}"></td>
+        <td th:text="${measurement.measurementTime}"></td>
+
+        <!-- Tähän alla olevaan soluun muut "toiminnot". Käyttöliittymä reagoi id -arvoon -->
+        <td>
+            <a th:href="@{/ui/{id}(id=${measurement.id})}">View</a>
+            <a>Edit</a>
+            <a>Delete</a>
+        </td>
+    </tr>
+    </tbody>
+    </table>
+
+    <!-- Tämä kutsuu ui-controllerin newMeasurementForm -funktiota. -->
+    <a th:href="@{/ui/new}">Add a new measurement</a>
+</body>
+</html>

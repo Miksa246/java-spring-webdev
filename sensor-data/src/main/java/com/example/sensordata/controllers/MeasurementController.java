@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+@RestController
 public class MeasurementController {
     // otetaan käyttöön measurementRepository tekemällä privaatti muuttuja
     private final MeasurementRepository measurementRepository;
@@ -30,21 +31,9 @@ public class MeasurementController {
         }
     }
 
-    // Tarkistaa, että tuleeko sisään puuttuvat attribuutit measurement-oliolle ja palauttaa
-    // BAD-REQUESTIN, jos puuttuu jotain
-    private ResponseEntity<MeasurementEntity> checkMissingAttributes(@RequestParam Map<String, String> rParams) {
-        for (String attribute : new String[]{"unit", "value", "location"}){
-            if (rParams.get(attribute) == null){
-                HttpHeaders header = new HttpHeaders();
-                header.set("status", attribute + " missing");
-                return new ResponseEntity<>(header, HttpStatus.BAD_REQUEST);
-            }
-        }
-        return null;
-    }
 
     // REST API
-    @GetMapping("/measurement")
+    @GetMapping("/measurements")
     public ResponseEntity<List<MeasurementEntity>> getMeasurements(){
         try {
             return new ResponseEntity<>(measurementRepository.findAll(), HttpStatus.OK); // oletuksena jos kaikki on ok
@@ -53,22 +42,22 @@ public class MeasurementController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PostMapping("/measurement")
-    public ResponseEntity<MeasurementEntity> postMeasurement(@RequestParam Map<String, String> rParams){
-        // 400 bad request ja sille on hyvä antaa tietoa mahdollisesta häikästä
-        try {
-            ResponseEntity<MeasurementEntity> header = checkMissingAttributes(rParams);
-            if (header != null) return header;
-            MeasurementEntity measurementEntity = new MeasurementEntity(rParams.get("unit"), Double.parseDouble(rParams.get("value")), rParams.get("location"));
-            measurementRepository.save(measurementEntity);
-            return new ResponseEntity<>(measurementEntity, HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping("/measurements")
+    public ResponseEntity<MeasurementEntity> postMeasurement(@RequestBody MeasurementEntity newMeasurement){
+        // Tarkista tässä kohtaa, että kaikki tarvittavat kentät ovat määritelty
+        // Esimerkiksi, jos olet lisännyt validointiannotaatioita MeasurementEntity-luokkaan,
+        // voit käyttää Springin @Valid tai @Validated annotaatiota validaation aktivoimiseksi:
+        // @RequestBody @Valid MeasurementEntity newMeasurement
+
+        // Tallenna mittaus tietokantaan
+        MeasurementEntity savedMeasurement = measurementRepository.save(newMeasurement);
+
+        // Palauta luotu mittaus ja HTTP 201 Created status-koodi
+        return new ResponseEntity<>(savedMeasurement, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/measurement/{id}")
+
+    @DeleteMapping("/measurements/{id}")
     public ResponseEntity<Void> deleteMeasurement(@PathVariable Long id){
         try {
             if (measurementRepository.existsById(id)){
@@ -82,28 +71,26 @@ public class MeasurementController {
         }
     }
 
-    @PutMapping("/measurement/{id}")
-    public ResponseEntity<MeasurementEntity> putMeasurement(@PathVariable Long id, @RequestParam Map<String,String> rParams){
-        try {
-            // Tähän on kaksi vaihtoehtoa, mukana tulevat joko kaikki tiedot, tai vain muutettavat
-            // Jos oletetaan, että kaikki tiedot, niin käsitellään samalla lailla kuin POST:
-            ResponseEntity<MeasurementEntity> header = checkMissingAttributes(rParams);
-            if (header != null) return header;
-            MeasurementEntity measurementEntity = measurementRepository.findById(id).orElseThrow();
-            measurementEntity.setUnit(rParams.get("unit"));
-            measurementEntity.setValue(Double.parseDouble(rParams.get("value")));
-            measurementEntity.setLocation(rParams.get("location"));
-            measurementRepository.save(measurementEntity);
-            return new ResponseEntity<>(measurementEntity, HttpStatus.OK);
-        } catch (NoSuchElementException e) { // nousee kun yritetään hakea tietoa, mitä ei ole olemassa
-            HttpHeaders header = new HttpHeaders();
-            header.set("status", "missing measurement with id " + id);
-            return new ResponseEntity<>(header, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping("/measurements/{id}")
+    public ResponseEntity<MeasurementEntity> putMeasurement(@PathVariable Long id, @RequestBody MeasurementEntity updatedMeasurement) {
+        return measurementRepository.findById(id)
+                .map(measurement -> {
+                    // Päivitä mittauksen tiedot. Voit asettaa tässä vaiheessa uudet arvot suoraan `updatedMeasurement`-oliosta.
+                    measurement.setUnit(updatedMeasurement.getUnit());
+                    measurement.setUnit(updatedMeasurement.getUnit());
+                    measurement.setValue(updatedMeasurement.getValue());
+                    measurement.setLocation(updatedMeasurement.getLocation());
+                    measurement.setMeasurementTime(updatedMeasurement.getMeasurementTime()); // Olettaen että haluat myös päivittää ajan
+
+                    // Tallenna päivitetty mittaus tietokantaan
+                    MeasurementEntity savedMeasurement = measurementRepository.save(measurement);
+
+                    // Palauta päivitetty mittaus ja HTTP 200 OK status-koodi
+                    return new ResponseEntity<>(savedMeasurement, HttpStatus.OK);
+                })
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND)); // Jos mittaus tunnisteella ei löydy, palauta 404 Not Found
     }
+
 
 
 }

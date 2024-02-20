@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 import java.sql.Timestamp;
 import java.util.Date;
 
+@Entity
 public class MeasurementEntity {
     @Id
     @GeneratedValue

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Measurement Details</title>
+</head>
+<body>
+<h1>Measurement Details</h1>
+<p>ID: <span th:text="${measurement.id}">Add id here</span></p>
+<p>Content: <span th:text="${measurement.unit}">Add unit of measure here</span></p>
+<p>Content: <span th:text="${measurement.measurementValue}">Add value here</span></p>
+<p>Content: <span th:text="${measurement.location}">Add location here</span></p>
+<p>Content: <span th:text="${measurement.measurementTime}">Add time of measurement here</span></p>
+<a th:href="@{/ui}">Back to Measurements List</a>
+</body>
+</html>

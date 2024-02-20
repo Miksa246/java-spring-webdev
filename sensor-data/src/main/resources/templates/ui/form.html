@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>memo Form</title>
+</head>
+<body>
+<h1>Measurement Form</h1>
+
+<form action="" method="POST">
+    <label for="id">ID:</label>
+    <input type="text" id="id"  />
+    <br/>
+
+    <label for="unit">Unit:</label>
+    <textarea id="unit" required="required"></textarea>
+    <br/>
+    <label for="measurementValue">Value:</label>
+    <textarea id="measurementValue" required="required"></textarea>
+    <br/>
+    <label for="location">Location:</label>
+    <textarea id="location" required="required"></textarea>
+    <br/>
+    <button type="submit">Save</button>
+</form>
+<a href="/ui">Back to memo List</a>
+</body>
+</html>
