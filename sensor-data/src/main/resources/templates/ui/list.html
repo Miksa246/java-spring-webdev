@@ -4,7 +4,7 @@
     <title>Measurement List</title>
 </head>
 <body>
-<h1>Sensor measurements data</h1>
+<h1>Sensor data</h1>
 <table>
     <thead>
     <tr>
@@ -26,8 +26,10 @@
         <!-- Tähän alla olevaan soluun muut "toiminnot". Käyttöliittymä reagoi id -arvoon -->
         <td>
             <a th:href="@{/ui/{id}(id=${measurement.id})}">View</a>
-            <a>Edit</a>
-            <a>Delete</a>
+            <a th:href="@{/ui/edit/{id}(id=${measurement.id})}">Edit</a>
+            <form th:id="'deleteForm' + ${measurement.id}" th:action="@{ui/{id}(id=${measurement.id})}" th:method="DELETE" style="display : inline" >
+                <a href="" th:onclick=" document.getElementById('deleteForm' + /*[[${measurement.id}]]*/).submit(); return false;" >Delete</a>
+            </form>
         </td>
     </tr>
     </tbody>

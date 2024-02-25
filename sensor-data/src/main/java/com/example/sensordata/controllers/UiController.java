@@ -5,9 +5,7 @@ import com.example.sensordata.repositories.MeasurementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/ui")
@@ -42,6 +40,26 @@ public class UiController {
         model.addAttribute("measurement", measurementRepository.findById(id).orElse(null));
         return "ui/form";
     }
+
+    @PostMapping("/new")
+    public String newMeasurementSubmit(@ModelAttribute MeasurementEntity measurementEntity) {
+        measurementRepository.save(measurementEntity);
+        return "redirect:/ui"; // Palautetaan lista käyttöliittymään
+    }
+
+    @PutMapping("/edit/{id}")
+    public String editMeasurementSubmit(@ModelAttribute MeasurementEntity measurementEntity, @PathVariable Long id){
+        measurementRepository.save(measurementEntity);
+        return "redirect:/ui";
+    }
+
+    @DeleteMapping("{id}")
+    public String deleteMeasurement(@PathVariable Long id){
+        measurementRepository.deleteById(id);
+        return "redirect:/ui";
+    }
+
+
 }
 
 

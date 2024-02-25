@@ -24,9 +24,9 @@ public class MeasurementController {
             measurementRepository.save(m1);
             MeasurementEntity m2 = new MeasurementEntity("humidity", 0.67, "1");
             measurementRepository.save(m2);
-            MeasurementEntity m3 = new MeasurementEntity("m/s", 0.5, "2");
+            MeasurementEntity m3 = new MeasurementEntity("kg", 0.5, "2");
             measurementRepository.save(m3);
-            MeasurementEntity m4 = new MeasurementEntity("humidity", 0.30, "2");
+            MeasurementEntity m4 = new MeasurementEntity("km/h", 0.30, "2");
             measurementRepository.save(m4);
         }
     }
